@@ -1,5 +1,4 @@
-using Catalog.API.Data;
-using Catalog.API.Repository;
+using Basket.API.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,9 +8,12 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddScoped<ICatalogContext, CatalogContext>();
-builder.Services.AddScoped<IProductRepository, ProductRepository>();
+builder.Services.AddScoped<IBasketRepository, BasketRepository>();
+builder.Services.AddStackExchangeRedisCache(o =>
+{
+    o.Configuration = builder.Configuration.GetValue<string>("CasheSettings:Connection");
 
+});
 
 var app = builder.Build();
 
