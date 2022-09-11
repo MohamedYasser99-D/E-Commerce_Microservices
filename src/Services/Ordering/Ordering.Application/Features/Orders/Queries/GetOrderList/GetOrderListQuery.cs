@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using Ordering.Domain.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
