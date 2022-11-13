@@ -1,6 +1,7 @@
 using Basket.API.GrpcServices;
 using Basket.API.Repositories;
 using Discount.Grpc.Protos;
+using MassTransit;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,6 +21,18 @@ builder.Services.AddStackExchangeRedisCache(o =>
 
 });
 
+builder.Services.AddMassTransit(o=>
+{
+    o.UsingRabbitMq((ctx, config) =>
+    {
+        config.Host("amqp://guest:guest@localhost:5672");
+    });
+});
+
+builder.Services.AddAutoMapper(typeof(Program));
+
+//builder.Services.AddMassTransitHostedService();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -28,6 +41,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
 
 app.UseAuthorization();
 

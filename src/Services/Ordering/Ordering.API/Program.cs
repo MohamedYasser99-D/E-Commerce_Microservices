@@ -1,3 +1,6 @@
+using EventBus.Messages.Common;
+using MassTransit;
+using Ordering.API.EventBusConsumers;
 using Ordering.API.Extentions;
 using Ordering.Application;
 using Ordering.Infrastructure;
@@ -10,7 +13,20 @@ builder.Services.AddInfrastructureServices(builder.Configuration);
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-
+builder.Services.AddMassTransit(o =>
+{
+    o.AddConsumer<BasketCheckoutConsumer>();
+    o.UsingRabbitMq((ctx, config) =>
+    {
+        config.Host("amqp://guest:guest@localhost:5672");
+        config.ReceiveEndpoint(EventBusConstants.BasketCheckoutQueue, c =>
+        {
+            c.ConfigureConsumer<BasketCheckoutConsumer>(ctx);
+        });
+    });
+});
+builder.Services.AddAutoMapper(typeof(Program));
+builder.Services.AddScoped<BasketCheckoutConsumer>();
 
 
 var app = builder.Build();
